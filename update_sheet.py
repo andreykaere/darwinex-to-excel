@@ -8,9 +8,7 @@ from openpyxl.cell import Cell
 from update_info import *
 
 file = 'DWX-MACRO.xlsx'
-
 WB = load_workbook(filename=file)
-
 SHEET = WB.active
 
 FIELDS1 = FIELDS2 = FIELDS3 = ["ex", "anos", "la", "equity", "rentabilidad",
@@ -34,37 +32,26 @@ def update_column(col):
 
     while SHEET[cord].value != None:
         column[SHEET[cord].value] = (col, row)  
-
         row += 1
         cord = col + str(row)
-
-        #print(SHEET[cord].value)
-
-    #print(column)
 
     return column
 
 
 
 def get_color(field, value):
-    
     benchmark = None
 
     if field == "anos":
         benchmark = 4
-        
     if field == "d_score":
         benchmark = 65
-
     if field == "divergencia":
         benchmark = 0
-    
     if field == "la":
         benchmark = 7
-    
     if field == "equity":
         benchmark = 8000
-
     if benchmark == None:
         return "WHITE"
 
@@ -83,21 +70,14 @@ def next(char):
 
 def fill_cell(name, cords, FIELDS):
     (char, num) = cords
-
     char = next(char)
-    
     data = INFO[name]
         
     for field in FIELDS:
-        
         cord = char + str(num)
-
         value = data[field]
-
         color = get_color(field, value)
-
         print(cord, field, value, color)
-
         SHEET[cord] = value
 
         if field in ['divergencia', 'rentabilidad']:
@@ -109,32 +89,14 @@ def fill_cell(name, cords, FIELDS):
             else:
                 SHEET[cord] = '-'
 
-
         if color != "WHITE":
             SHEET[cord].fill = eval(color + "FILL")
-
         char = next(char)
-
-
-
-
-    
 
 
 def fill_category(category, FIELDS):
     for name in list(category.keys()):
-        #print(name)
         fill_cell(name, category[name], FIELDS)
-    
-
-    #for (i, cord) in category:
-    #    anos         = fill_cell("anos", cords)
-    #    la           = fill_cell("la", cords)
-    #    equity       = fill_cell("equity", cords)
-    #    rentabilidad = fill_cell("rentabilidad", cords)
-    #    d_score      = fill_cell("d_score", cords)
-    #    divergencia  = fill_cell("divergencia", cords)
-        
 
 
 def fill_sheet():
@@ -143,40 +105,17 @@ def fill_sheet():
     fill_category(OBSERVACION_SIN_EXP, FIELDS3)
 
 
-
-
-    
-
-
-
-
-
 INVIRTIENDO         = update_column("B")
 OBSERVACION         = update_column("L")
 OBSERVACION_SIN_EXP = update_column("V")
 
 
-#print(INVIRTIENDO)
-
-
-#ALL_NAMES = list(INVIRTIENDO.keys())
-
 ALL_NAMES = set(list(INVIRTIENDO.keys()) + \
                 list(OBSERVACION.keys()) + \
                 list(OBSERVACION_SIN_EXP.keys()))
 
-
 for name in ALL_NAMES:
     get_data(name)
 
-#print(INFO)
-
-
-
-#fill_category(INVIRTIENDO, FIELDS1)
-
 fill_sheet()
-
-#sheet["A1"] = "foo"
-
 WB.save(filename=file)
